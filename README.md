@@ -23,13 +23,13 @@ Exploratory analysis and a reproducible preprocessing pipeline for a highly imba
 **1. Dataset analysis**
 - Class distribution, missing values, feature distributions, correlation structure, outliers and class separability.
 - Findings that drove the pipeline:
-  - **7,134 missing values (15.9% of all cells)**, concentrated in `f10` (87.3% missing), `f1` (41.0%) and `f3` (30.9%).
+  - **7,134 missing values (15.9% of the numeric feature values, `f1`–`f10`)**, concentrated in `f10` (87.3% missing), `f1` (41.0%) and `f3` (30.9%).
   - **Near-perfect multicollinearity:** `f2` and `f7` correlate at 1.000, and `f2`/`f9`/`f7` and `f5`/`f6` are also highly correlated.
   - **Outliers** in several numeric features, which motivated robust imputation.
 
 **2. Preprocessing pipeline**
 - **Missing values:** `IterativeImputer` (MICE) for the numeric features, plus `*_missing_flag` indicators for the heavily missing ones, since missingness may itself be informative. The categorical feature is filled with its mode. Result: 0 missing values remaining.
-- **Feature selection:** drop the non-predictive `ID` column and the redundant `f7` (r = 1.000 with `f2`), `f6` and `f5`.
+- **Feature selection:** drop the non-predictive `ID` column, the redundant `f7` (r = 1.000 with `f2`) and `f6` (r = 0.95 with `f5`, which is kept because it correlates more strongly with the target).
 - **Class imbalance:** a hybrid strategy. SMOTE is applied to the training data only, partially balancing the classes from 299 to 1,393 minority samples (25% of the set, +1,094 synthetic rows), and `class_weight='balanced'` is planned for the training stage to avoid over-generating synthetic data.
 - **Encoding and scaling:** categorical encoding of `f11`, then `StandardScaler`. The identical transformation is applied to the test set.
 
